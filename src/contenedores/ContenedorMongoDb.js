@@ -1,17 +1,16 @@
-import mongoose from 'mongoose'
-import config from '../config.js'
-
-await mongoose.connect(config.mongodb.cnxStr, config.mongodb.options)
+import * as model from '../productsSchema.js' 
+import * as usersModel from '../usersSchema.js'  /*El esquema para usuarios está creado pero por ahora
+no lo utilizamos */ 
 
 class ContenedorMongoDb {
 
-    constructor(nombreColeccion, esquema) {
-        this.coleccion = mongoose.model(nombreColeccion, esquema)
+    constructor() {
     }
 
     async listar(id) {
         try {
-            await this.colleccion.find({id:id})
+           const encontrar =  await model.products.find({_id:  id})
+           console.log(encontrar)
         } catch (error) {
             if (error) throw new Error(error)
         }
@@ -19,7 +18,8 @@ class ContenedorMongoDb {
 
     async listarAll() {
          try {
-            await this.colleccion.find({})
+           const listar =  await model.products.find({})
+           console.log(listar)
         } catch (error) {
             if (error) throw new Error(error)
         }
@@ -27,15 +27,20 @@ class ContenedorMongoDb {
 
     async guardar(nuevoElem) {
         try {
-            await this.colleccion.insertOne({nuevoElem})
+            const captarProd = new model.products(nuevoElem)
+            const guardar =  await captarProd.save()
+            console.log(guardar)
         } catch (error) {
             if (error) throw new Error(error)
         }
     }
 
-    async actualizar(nuevoElem, cfg) {
+    async actualizar(title, price, thumbnail, name) {
          try {
-            await this.colleccion.findOneAndUpdate({name: nuevoElem}, {$set: {cfg}})
+           const actualizar = await model.products.updateOne({title: title}, {$set: {
+           name:name, price: price, thumbnail: thumbnail
+           }})
+           console.log(actualizar)
         } catch (error) {
             if (error) throw new Error(error)
         }
@@ -43,7 +48,8 @@ class ContenedorMongoDb {
 
     async borrar(id) {
          try {
-            await this.colleccion.findOneAndDelete({id:id})
+            const deleteOne = await model.products.deleteOne({_id:id})
+            console.log(deleteOne)
         } catch (error) {
             if (error) throw new Error(error)
         }
@@ -51,7 +57,8 @@ class ContenedorMongoDb {
 
     async borrarAll() {
          try {
-            await this.colleccion.remove({})
+          const deleteAll = await model.products.deleteMany({})
+          console.log("Borrado con éxito")
         } catch (error) {
             if (error) throw new Error(error)
         }
